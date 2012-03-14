@@ -48,7 +48,7 @@ module ActionController
     end
     
     def params
-      @_tainted_params ||= Parameters.new(super)
+      Parameters.new(super)
     end
   end
 end
