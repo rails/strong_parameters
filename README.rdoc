@@ -34,5 +34,4 @@ Thanks to Nick Kallen for the tainting idea!
 == Todos
 
 * Make this play nice with nested parameters [???]
-* Use hash delegate instead of subclass to prevent leakage via slice/delete_if and friends [José]
 * Automatically untaint parameters coming from a signed form [Yehuda]
