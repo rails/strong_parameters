@@ -33,5 +33,8 @@ Thanks to Nick Kallen for the tainting idea!
 
 == Todos
 
-* Make this play nice with nested parameters [???]
+* Make this play nice with nested parameters [???]. Design:
+
+    params.permit(:name, friends: [ :name, { family: [ :name ] }])
+
 * Automatically untaint parameters coming from a signed form [Yehuda]
