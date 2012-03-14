@@ -1,22 +1,22 @@
 require 'test_helper'
 
-class PeopleController < ActionController::Base
+class BooksController < ActionController::Base
   def create
-    params.required[:person]
+    params.required[:book]
     head :ok
   end
 end
 
-class ActionControllerTaintedParamsTest < ActionController::TestCase
-  tests PeopleController
+class ActionControllerRequiredParamsTest < ActionController::TestCase
+  tests BooksController
   
   test "missing required parameters will raise exception" do
-    post :create, { user: { name: "Mjallo!" } }
+    post :create, { magazine: { name: "Mjallo!" } }
     assert_response :bad_request
   end
   
   test "required parameters that are present will not raise" do
-    post :create, { person: { name: "Mjallo!" } }
+    post :create, { book: { name: "Mjallo!" } }
     assert_response :ok
   end
 end
