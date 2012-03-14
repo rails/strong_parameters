@@ -1,3 +1,33 @@
-= StrongParameters
+= Strong Parameters
 
-This project rocks and uses MIT-LICENSE.
+Action Controller parameter attributes are now tainted by default and Active Model has been extended to check for tainted on mass assignment. This means you'll have to make a conscious choice about which attributes to allow for mass updating and this prevent accidentally exposing that which shouldn't be exposed.
+
+Example:
+
+    class PeopleController < ActionController::Base
+      def create
+        Person.create(person_params)
+      end
+      
+      def update
+        redirect_to current_account.people.find(params[:id]).tap do |person|
+          person.update_attributes!(person_params)
+        end
+      end
+      
+      private
+        def person_params
+          params.required[:person].permit(:name, :age)
+        end
+    end
+
+
+It also provides an approach for specifying required parameters and automatically returning a 400 Bad Request in case those are not present.
+
+So for the example above, if the person parameter is not present, a ActionController::MissingParameter exception is raised, which is then automatically caught by ActionController::Base and turned into that 400 Bad Request reply.
+
+== Todos
+
+* Make this play nice with nested parameters [???]
+* Use hash delegate instead of subclass to prevent leakage via slice/delete_if and friends [José]
+* Automatically untaint parameters coming from a signed form [Yehuda]
