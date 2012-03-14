@@ -4,8 +4,6 @@ Action Controller parameter attributes are now tainted by default and Active Mod
 
 In addition, parameters can be marked as required and flow through a predefined raise/rescue flow to end up as a 400 Bad Request with no effort.
 
-Example:
-
     class PeopleController < ActionController::Base
       # This will raise an ActiveModel::TaintedAttributes exception because it's using mass assignment
       # without an explicit permit step
@@ -31,6 +29,7 @@ Example:
         end
     end
 
+Thanks to Nick Kallen for the tainting idea!
 
 == Todos
 
