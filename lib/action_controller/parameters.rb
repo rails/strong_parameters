@@ -34,6 +34,12 @@ module ActionController
   end
   
   module StrongParameters
+    extend ActiveSupport::Concern
+    
+    included do
+      rescue_from(ActionController::ParameterMissing) { head :bad_request }
+    end
+    
     def params
       @_tainted_params ||= Parameters.new(super)
     end
@@ -41,4 +47,3 @@ module ActionController
 end
 
 ActionController::Base.send :include, ActionController::StrongParameters
-ActionController::Base.rescue_from(ActionController::ParameterMissing) { head :bad_request }
