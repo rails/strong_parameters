@@ -10,8 +10,12 @@ module ActionController
       taint if tainted
     end
   
-    def required
-      RequiredParameters.new(self, tainted?)
+    def required(arg=nil)
+      if arg
+        self[arg].presence || raise(ActionController::ParameterMissing)
+      else
+        RequiredParameters.new(self, tainted?)
+      end
     end
     
     def permit(*keys)
