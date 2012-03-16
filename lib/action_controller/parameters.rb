@@ -9,24 +9,22 @@ module ActionController
       super(attributes)
       taint if tainted
     end
-  
-    def required
-      RequiredParameters.new(self, tainted?)
+
+    def required(key)
+      self[key].presence || raise(ActionController::ParameterMissing)
     end
-    
+
     def permit(*keys)
       slice(*keys).untaint
     end
-    
 
     def [](key)
       return_as_tainted_parameters_if_hash(super)
     end
-    
+
     def fetch(key)
       return_as_tainted_parameters_if_hash(super)
     end
-    
 
     private
       def return_as_tainted_parameters_if_hash(value)
@@ -34,19 +32,13 @@ module ActionController
       end
   end
 
-  class RequiredParameters < Parameters
-    def [](key)
-      super(key).presence || raise(ActionController::ParameterMissing)
-    end
-  end
-  
   module StrongParameters
     extend ActiveSupport::Concern
-    
+
     included do
       rescue_from(ActionController::ParameterMissing) { head :bad_request }
     end
-    
+
     def params
       Parameters.new(super)
     end
