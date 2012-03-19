@@ -11,7 +11,7 @@ module ActionController
     end
 
     def required(key)
-      self[key].presence || raise(ActionController::ParameterMissing)
+      fetch(key) { raise ActionController::ParameterMissing }
     end
 
     def permit(*keys)

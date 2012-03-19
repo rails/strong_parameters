@@ -8,6 +8,11 @@ class ParametersTaintTest < ActiveSupport::TestCase
     }})
   end
 
+  test "empty values are OK" do
+    @params[:foo] = {}
+    assert @params.required(:foo)
+  end
+
   test "taint is sticky on accessors" do
     assert @params.slice(:person).tainted?
     assert @params[:person][:name].tainted?
