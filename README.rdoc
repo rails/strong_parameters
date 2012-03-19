@@ -25,7 +25,7 @@ In addition, parameters can be marked as required and flow through a predefined 
         # since you'll be able to reuse the same permit list between create and update. Also, you
         # can specialize this method with per-user checking of permissible attributes.
         def person_params
-          params.required[:person].permit(:name, :age)
+          params.required(:person).permit(:name, :age)
         end
     end
 
