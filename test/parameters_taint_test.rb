@@ -27,4 +27,12 @@ class ParametersTaintTest < ActiveSupport::TestCase
   test "taint is sticky beyond merges" do
     assert @params.merge(a: "b").tainted?
   end
+  
+  test "modifying the parameters" do
+    @params[:person][:hometown] = "Chicago"
+    @params[:person][:family] = { brother: "Jonas" }
+
+    assert_equal "Chicago", @params[:person][:hometown]
+    assert_equal "Jonas", @params[:person][:family][:brother]
+  end
 end

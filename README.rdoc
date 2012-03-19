@@ -6,7 +6,7 @@ In addition, parameters can be marked as required and flow through a predefined 
 
     class PeopleController < ActionController::Base
       # This will raise an ActiveModel::TaintedAttributes exception because it's using mass assignment
-      # without an explicit permit step
+      # without an explicit permit step.
       def create
         Person.create(params[:person])
       end

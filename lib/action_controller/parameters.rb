@@ -19,16 +19,21 @@ module ActionController
     end
 
     def [](key)
-      return_as_tainted_parameters_if_hash(super)
+      convert_hashes_to_parameters(key, super)
     end
 
     def fetch(key)
-      return_as_tainted_parameters_if_hash(super)
+      convert_hashes_to_parameters(key, super)
     end
 
     private
-      def return_as_tainted_parameters_if_hash(value)
-        value.is_a?(Hash) ? self.class.new(value, tainted?) : value
+      def convert_hashes_to_parameters(key, value)
+        if value.is_a?(Parameters) || !value.is_a?(Hash)
+          value
+        else
+          # Convert to Parameters on first access
+          self[key] = self.class.new(value, tainted?)
+        end
       end
   end
 
@@ -40,7 +45,11 @@ module ActionController
     end
 
     def params
-      Parameters.new(super)
+      @_tainted_params ||= Parameters.new(super)
+    end
+
+    def params=(val)
+      @_tainted_params = Parameters.new(val)
     end
   end
 end
