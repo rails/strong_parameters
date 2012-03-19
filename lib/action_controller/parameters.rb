@@ -1,7 +1,7 @@
 require 'active_support/core_ext/hash/indifferent_access'
 
 module ActionController
-  class ParameterMissing < RuntimeError
+  class ParameterMissing < IndexError
   end
 
   class Parameters < ActiveSupport::HashWithIndifferentAccess
