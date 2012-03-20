@@ -1,10 +1,27 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
 
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
-require "rails/test_help"
+require 'test/unit'
+require 'strong_parameters'
 
-Rails.backtrace_cleaner.remove_silencers!
+module ActionController
+  SharedTestRoutes = ActionDispatch::Routing::RouteSet.new
+  SharedTestRoutes.draw do
+    match ':controller(/:action)'
+  end
+
+  class Base
+    include ActionController::Testing
+    include SharedTestRoutes.url_helpers
+  end
+
+  class ActionController::TestCase
+    setup do
+      @routes = SharedTestRoutes
+    end
+  end
+end
+
 
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
