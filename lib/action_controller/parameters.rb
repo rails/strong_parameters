@@ -1,4 +1,6 @@
+require 'active_support/concern'
 require 'active_support/core_ext/hash/indifferent_access'
+require 'action_controller'
 
 module ActionController
   class ParameterMissing < IndexError
