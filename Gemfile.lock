@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     strong_parameters (0.1.0)
-      actionpack (~> 3.2.0)
-      activemodel (~> 3.2.0)
+      actionpack (>= 3.2.0)
+      activemodel (>= 3.2.0)
 
 GEM
   remote: http://rubygems.org/
