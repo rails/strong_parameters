@@ -26,6 +26,10 @@ module ActionController
       self
     end
 
+    def required(key)
+      self[key].presence || raise(ActionController::ParameterMissing.new(key))
+    end
+
     def permit(*keys)
       slice(*keys).permit!
     end
@@ -38,9 +42,9 @@ module ActionController
       unless block_given? || key?(key)
         raise ActionController::ParameterMissing.new(key)
       end
+
       convert_hashes_to_parameters(key, super)
     end
-    alias :required :fetch
 
     def slice(*keys)
       self.class.new(super)

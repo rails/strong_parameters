@@ -8,11 +8,6 @@ class ParametersTaintTest < ActiveSupport::TestCase
     }})
   end
 
-  test "empty values are OK" do
-    @params[:foo] = {}
-    assert @params.required(:foo)
-  end
-
   test "fetch raises ParameterMissing exception" do
     e = assert_raises(ActionController::ParameterMissing) do
       @params.fetch :foo
