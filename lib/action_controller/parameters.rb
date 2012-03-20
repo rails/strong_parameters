@@ -6,7 +6,7 @@ module ActionController
   class ParameterMissing < IndexError
     attr_reader :param
 
-    def initialize param
+    def initialize(param)
       @param = param
       super("key not found: #{param}")
     end
