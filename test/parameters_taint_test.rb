@@ -13,26 +13,33 @@ class ParametersTaintTest < ActiveSupport::TestCase
     assert @params.required(:foo)
   end
 
-  test "taint is sticky on accessors" do
+  test "fetch raises ParameterMissing exception" do
+    e = assert_raises(ActionController::ParameterMissing) do
+      @params.fetch :foo
+    end
+    assert_equal :foo, e.param
+  end
+
+  test "permitted is sticky on accessors" do
     assert !@params.slice(:person).permitted?
     assert !@params[:person][:name].permitted?
 
     @params.each { |key, value| assert(value.permitted?) if key == :person }
 
     assert !@params.fetch(:person).permitted?
-    
+
     assert !@params.values_at(:person).first.permitted?
   end
-  
-  test "taint is sticky on mutators" do
+
+  test "permitted is sticky on mutators" do
     assert !@params.delete_if { |k| k == :person }.permitted?
     assert !@params.keep_if { |k,v| k == :person }.permitted?
   end
-  
-  test "taint is sticky beyond merges" do
+
+  test "permitted is sticky beyond merges" do
     assert !@params.merge(a: "b").permitted?
   end
-  
+
   test "modifying the parameters" do
     @params[:person][:hometown] = "Chicago"
     @params[:person][:family] = { brother: "Jonas" }

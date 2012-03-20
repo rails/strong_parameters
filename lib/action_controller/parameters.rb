@@ -4,6 +4,12 @@ require 'action_controller'
 
 module ActionController
   class ParameterMissing < IndexError
+    attr_reader :param
+
+    def initialize param
+      @param = param
+      super("key not found: #{param}")
+    end
   end
 
   class Parameters < ActiveSupport::HashWithIndifferentAccess
@@ -20,10 +26,6 @@ module ActionController
       self
     end
 
-    def required(key)
-      fetch(key) { raise ActionController::ParameterMissing }
-    end
-
     def permit(*keys)
       slice(*keys).permit!
     end
@@ -33,8 +35,12 @@ module ActionController
     end
 
     def fetch(key)
+      unless block_given? || key?(key)
+        raise ActionController::ParameterMissing.new(key)
+      end
       convert_hashes_to_parameters(key, super)
     end
+    alias :required :fetch
 
     def slice(*keys)
       self.class.new(super)
