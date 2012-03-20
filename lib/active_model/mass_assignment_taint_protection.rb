@@ -1,13 +1,13 @@
 module ActiveModel
-  class TaintedAttributes < StandardError
+  class ForbiddenAttributes < StandardError
   end
 
   module MassAssignmentTaintProtection
     def sanitize_for_mass_assignment(new_attributes, options = {})
-      unless new_attributes.permitted?
-        raise ActiveModel::TaintedAttributes
-      else
+      if new_attributes.permitted?
         super
+      else
+        raise ActiveModel::ForbiddenAttributes
       end
     end
   end

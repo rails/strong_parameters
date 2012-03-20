@@ -9,7 +9,7 @@ end
 
 class ActiveModelMassUpdateProtectionTest < ActiveSupport::TestCase
   test "tainted attributes cannot be used for mass updating" do
-    assert_raises(ActiveModel::TaintedAttributes) do
+    assert_raises(ActiveModel::ForbiddenAttributes) do
       Person.new.sanitize_for_mass_assignment(ActionController::Parameters.new(a: "b"))
     end
   end
