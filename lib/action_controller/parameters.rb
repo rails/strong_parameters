@@ -7,9 +7,17 @@ module ActionController
   end
 
   class Parameters < ActiveSupport::HashWithIndifferentAccess
+    attr_accessor :permitted
+    alias :permitted? :permitted
+
     def initialize(attributes = nil, tainted = true)
       super(attributes)
-      taint if tainted
+      @permitted = false
+    end
+
+    def permit!
+      @permitted = true
+      self
     end
 
     def required(key)
@@ -17,7 +25,7 @@ module ActionController
     end
 
     def permit(*keys)
-      slice(*keys).untaint
+      slice(*keys).permit!
     end
 
     def [](key)
@@ -26,6 +34,10 @@ module ActionController
 
     def fetch(key)
       convert_hashes_to_parameters(key, super)
+    end
+
+    def slice(*keys)
+      self.class.new(super)
     end
 
     private

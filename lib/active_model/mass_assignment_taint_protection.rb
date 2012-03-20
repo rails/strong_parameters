@@ -4,7 +4,7 @@ module ActiveModel
 
   module MassAssignmentTaintProtection
     def sanitize_for_mass_assignment(new_attributes, options = {})
-      if new_attributes.tainted?
+      unless new_attributes.permitted?
         raise ActiveModel::TaintedAttributes
       else
         super
