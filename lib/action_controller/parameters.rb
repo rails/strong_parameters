@@ -16,7 +16,7 @@ module ActionController
     attr_accessor :permitted
     alias :permitted? :permitted
 
-    def initialize(attributes = nil, tainted = true)
+    def initialize(attributes = nil)
       super(attributes)
       @permitted = false
     end
@@ -52,7 +52,7 @@ module ActionController
           value
         else
           # Convert to Parameters on first access
-          self[key] = self.class.new(value, tainted?)
+          self[key] = self.class.new(value)
         end
       end
   end
