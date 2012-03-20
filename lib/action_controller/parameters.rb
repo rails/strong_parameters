@@ -65,11 +65,11 @@ module ActionController
     end
 
     def params
-      @_tainted_params ||= Parameters.new(super)
+      @_params ||= Parameters.new(request.parameters)
     end
 
     def params=(val)
-      @_tainted_params = Parameters.new(val)
+      @_params = val.is_a?(Hash) ? Parameters.new(val) : val
     end
   end
 end
