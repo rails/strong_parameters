@@ -1,11 +1,11 @@
 = Strong Parameters
 
-Action Controller parameter attributes are now tainted by default and Active Model has been extended to check for tainted on mass assignment. This means you'll have to make a conscious choice about which attributes to allow for mass updating and thus prevent accidentally exposing that which shouldn't be exposed.
+With this plugin Action Controller parameters are forbidden to be used in Active Model mass assignments until they have been whitelisted. This means you'll have to make a conscious choice about which attributes to allow for mass updating and thus prevent accidentally exposing that which shouldn't be exposed.
 
 In addition, parameters can be marked as required and flow through a predefined raise/rescue flow to end up as a 400 Bad Request with no effort.
 
     class PeopleController < ActionController::Base
-      # This will raise an ActiveModel::TaintedAttributes exception because it's using mass assignment
+      # This will raise an ActiveModel::ForbiddenAttributes exception because it's using mass assignment
       # without an explicit permit step.
       def create
         Person.create(params[:person])
@@ -29,7 +29,7 @@ In addition, parameters can be marked as required and flow through a predefined 
         end
     end
 
-Thanks to Nick Kallen for the tainting idea!
+Thanks to Nick Kallen for the permit idea!
 
 == Todos
 
@@ -37,4 +37,4 @@ Thanks to Nick Kallen for the tainting idea!
 
     params.permit(:name, friends: [ :name, { family: [ :name ] }])
 
-* Automatically untaint parameters coming from a signed form [Yehuda]
+* Automatically permit parameters coming from a signed form [Yehuda]
