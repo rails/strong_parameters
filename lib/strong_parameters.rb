@@ -1,2 +1,2 @@
 require 'action_controller/parameters'
-require 'active_model/mass_assignment_taint_protection'
+require 'active_model/forbidden_attributes_protection'

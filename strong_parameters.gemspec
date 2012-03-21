@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = StrongParameters::VERSION
   s.authors     = ["David Heinemeier Hansson"]
   s.email       = ["david@heinemeierhansson.com"]
-  s.summary     = "Tainted and required parameters for Action Pack"
+  s.summary     = "Permitted and required parameters for Action Pack"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
