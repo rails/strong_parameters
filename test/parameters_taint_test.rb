@@ -15,6 +15,12 @@ class ParametersTaintTest < ActiveSupport::TestCase
     assert_equal :foo, e.param
   end
 
+  test "fetch doesnt raise ParameterMissing exception if there is a default" do
+    assert_nothing_raised do
+      assert_equal "monkey", @params.fetch(:foo, "monkey")
+    end
+  end
+
   test "permitted is sticky on accessors" do
     assert !@params.slice(:person).permitted?
     assert !@params[:person][:name].permitted?
