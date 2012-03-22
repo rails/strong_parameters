@@ -29,13 +29,13 @@ In addition, parameters can be marked as required and flow through a predefined 
         end
     end
 
+You can also use permit on nested parameters, like:
+
+    params.permit(:name, friends: [ :name, { family: [ :name ] }])
+
 Thanks to Nick Kallen for the permit idea!
 
 == Todos
-
-* Make this play nice with nested parameters [???]. Design:
-
-    params.permit(:name, friends: [ :name, { family: [ :name ] }])
 
 * Automatically permit parameters coming from a signed form [Yehuda]
 
