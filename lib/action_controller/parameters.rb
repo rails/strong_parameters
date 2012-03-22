@@ -62,15 +62,10 @@ module ActionController
       convert_hashes_to_parameters(key, super)
     end
 
-    def fetch(key, default = nil)
-      case
-      when !key?(key) && default
-        default
-      when !key?(key) && !block_given?
-        raise ActionController::ParameterMissing.new(key)
-      else
-        convert_hashes_to_parameters(key, super)
-      end
+    def fetch(key, *args)
+      convert_hashes_to_parameters(key, super)
+    rescue KeyError
+      raise ActionController::ParameterMissing.new(key)
     end
 
     def slice(*keys)

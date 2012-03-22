@@ -18,6 +18,7 @@ class ParametersTaintTest < ActiveSupport::TestCase
   test "fetch doesnt raise ParameterMissing exception if there is a default" do
     assert_nothing_raised do
       assert_equal "monkey", @params.fetch(:foo, "monkey")
+      assert_equal "monkey", @params.fetch(:foo) { "monkey" }
     end
   end
 
