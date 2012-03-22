@@ -30,8 +30,32 @@ module ActionController
       self[key].presence || raise(ActionController::ParameterMissing.new(key))
     end
 
-    def permit(*keys)
-      slice(*keys).permit!
+    def permit(*filters)
+      params = self.class.new
+
+      filters.each do |filter|
+        case filter
+        when Symbol then
+          params[filter] = self[filter]
+        when Hash then
+          self.slice(*filter.keys).each do |key, value|
+            return unless value
+
+            key = key.to_sym
+
+            params[key] = each_element(value) do |value|
+              # filters are a Hash, so we expect value to be a Hash too
+              next if filter.is_a?(Hash) && !value.is_a?(Hash)
+
+              value = self.class.new(value) if !value.respond_to?(:permit)
+
+              value.permit(*Array.wrap(filter[key]))
+            end
+          end
+        end
+      end
+
+      params.permit!
     end
 
     def [](key)
@@ -57,6 +81,14 @@ module ActionController
         else
           # Convert to Parameters on first access
           self[key] = self.class.new(value)
+        end
+      end
+
+      def each_element(object)
+        if object.is_a?(Array)
+          object.map { |el| yield el }.compact
+        else
+          yield object
         end
       end
   end
