@@ -49,4 +49,8 @@ class ParametersTaintTest < ActiveSupport::TestCase
     assert_equal "Chicago", @params[:person][:hometown]
     assert_equal "Jonas", @params[:person][:family][:brother]
   end
+  
+  test "permitting parameters that are not there should not include the keys" do
+    assert !@params.permit(:person, :funky).has_key?(:funky)
+  end
 end
