@@ -73,7 +73,9 @@ module ActionController
     end
 
     def dup
-      Marshal.load Marshal.dump self
+      super.tap do |duplicate|
+        duplicate.instance_variable_set :@permitted, @permitted
+      end
     end
 
     private
