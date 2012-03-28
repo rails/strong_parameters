@@ -53,4 +53,9 @@ class ParametersTaintTest < ActiveSupport::TestCase
   test "permitting parameters that are not there should not include the keys" do
     assert !@params.permit(:person, :funky).has_key?(:funky)
   end
+
+  test "permit state is kept on a dup" do
+    @params.permit!
+    assert_equal @params.permitted?, @params.dup.permitted?
+  end
 end

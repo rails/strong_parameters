@@ -72,6 +72,10 @@ module ActionController
       self.class.new(super)
     end
 
+    def dup
+      Marshal.load Marshal.dump self
+    end
+
     private
       def convert_hashes_to_parameters(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)
