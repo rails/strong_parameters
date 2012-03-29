@@ -72,6 +72,12 @@ module ActionController
       self.class.new(super)
     end
 
+    def dup
+      super.tap do |duplicate|
+        duplicate.instance_variable_set :@permitted, @permitted
+      end
+    end
+
     private
       def convert_hashes_to_parameters(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)
