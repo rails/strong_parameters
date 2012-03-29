@@ -2,7 +2,7 @@ require 'test_helper'
 
 class BooksController < ActionController::Base
   def create
-    params.required(:book).required(:name)
+    params.require(:book).require(:name)
     head :ok
   end
 end

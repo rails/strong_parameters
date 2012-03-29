@@ -26,9 +26,11 @@ module ActionController
       self
     end
 
-    def required(key)
+    def require(key)
       self[key].presence || raise(ActionController::ParameterMissing.new(key))
     end
+    
+    alias :required :require
 
     def permit(*filters)
       params = self.class.new
