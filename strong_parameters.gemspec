@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "actionpack", ">= 3.2.0"
   s.add_dependency "activemodel", ">= 3.2.0"
+  s.add_dependency "railties", ">= 3.2.0"
 
   s.add_development_dependency "rake"
 end
