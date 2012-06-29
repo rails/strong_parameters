@@ -34,13 +34,28 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   test "nested arrays with strings" do
     params = ActionController::Parameters.new({
-      book: {
-        genres: ["Tragedy"]
+      :book => {
+        :genres => ["Tragedy"]
       }
     })
 
-    permitted = params.permit book: :genres
+    permitted = params.permit :book => :genres
     assert_equal ["Tragedy"], permitted[:book][:genres]
+  end
+
+  test "permit may specify symbols or strings" do
+    params = ActionController::Parameters.new({
+      :book => {
+        :title => "Romeo and Juliet",
+        :author => "William Shakespeare"
+      },
+      :magazine => "Shakespeare Today"
+    })
+
+    permitted = params.permit({:book => ["title", :author]}, "magazine")
+    assert_equal "Romeo and Juliet", permitted[:book][:title]
+    assert_equal "William Shakespeare", permitted[:book][:author]
+    assert_equal "Shakespeare Today", permitted[:magazine]
   end
 
   test "nested array with strings that should be hashes" do
