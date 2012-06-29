@@ -45,14 +45,14 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   test "permit may specify symbols or strings" do
     params = ActionController::Parameters.new({
-      :book => {
-        :title => "Romeo and Juliet",
-        :author => "William Shakespeare"
+      book: {
+        title: "Romeo and Juliet",
+        author: "William Shakespeare"
       },
-      :magazine => "Shakespeare Today"
+      magazine: "Shakespeare Today"
     })
 
-    permitted = params.permit({:book => ["title", :author]}, "magazine")
+    permitted = params.permit({ book: ["title", :author] }, "magazine")
     assert_equal "Romeo and Juliet", permitted[:book][:title]
     assert_equal "William Shakespeare", permitted[:book][:author]
     assert_equal "Shakespeare Today", permitted[:magazine]
