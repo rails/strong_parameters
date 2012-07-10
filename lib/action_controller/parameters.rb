@@ -29,7 +29,7 @@ module ActionController
     def require(key)
       self[key].presence || raise(ActionController::ParameterMissing.new(key))
     end
-    
+
     alias :required :require
 
     def permit(*filters)
@@ -93,6 +93,11 @@ module ActionController
       def each_element(object)
         if object.is_a?(Array)
           object.map { |el| yield el }.compact
+        # fields_for on an array of records uses numeric hash keys
+        elsif object.is_a?(Hash) && object.keys.all? { |k| k =~ /\A\d+\z/ }
+          hash = object.class.new
+          object.each { |k,v| hash[k] = yield v }
+          hash
         else
           yield object
         end
