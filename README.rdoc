@@ -48,10 +48,6 @@ every model you want protected.
       include ActiveModel::ForbiddenAttributesProtection
     end
 
-== Todos
-
-* Automatically permit parameters coming from a signed form [Yehuda]
-
 == Compatibility
 
 Due to a testing issue, this plugin is only fully compatible with rails/3-2-stable rev 275ee0dc7b and forward as well as rails/master rev b49a7ddce1 and forward.
