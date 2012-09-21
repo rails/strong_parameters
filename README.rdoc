@@ -10,16 +10,16 @@ In addition, parameters can be marked as required and flow through a predefined 
       def create
         Person.create(params[:person])
       end
-      
+
       # This will pass with flying colors as long as there's a person key in the parameters, otherwise
-      # it'll raise a ActionController::MissingParameter exception, which will get caught by 
+      # it'll raise a ActionController::MissingParameter exception, which will get caught by
       # ActionController::Base and turned into that 400 Bad Request reply.
       def update
-        redirect_to current_account.people.find(params[:id]).tap do |person|
+        redirect_to current_account.people.find(params[:id]).tap { |person|
           person.update_attributes!(person_params)
-        end
+        }
       end
-      
+
       private
         # Using a private method to encapsulate the permissible parameters is just a good pattern
         # since you'll be able to reuse the same permit list between create and update. Also, you
@@ -35,9 +35,18 @@ You can also use permit on nested parameters, like:
 
 Thanks to Nick Kallen for the permit idea!
 
-== Todos
+== Installation
 
-* Automatically permit parameters coming from a signed form [Yehuda]
+In Gemfile:
+
+    gem 'strong_parameters'
+
+and then run `bundle`. To activate the strong parameters, you need to include this module in
+every model you want protected.
+
+    class Post < ActiveRecord::Base
+      include ActiveModel::ForbiddenAttributesProtection
+    end
 
 == Compatibility
 
