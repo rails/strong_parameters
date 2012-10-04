@@ -58,4 +58,11 @@ class ParametersTaintTest < ActiveSupport::TestCase
     @params.permit!
     assert_equal @params.permitted?, @params.dup.permitted?
   end
+
+  test "permit is recursive" do
+    @params.permit!
+    assert @params.permitted?
+    assert @params[:person].permitted?
+    assert @params[:person][:name].permitted?
+  end
 end

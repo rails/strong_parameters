@@ -22,6 +22,11 @@ module ActionController
     end
 
     def permit!
+      each_pair do |key, value|
+        convert_hashes_to_parameters(key, value)
+        self[key].permit! if self[key].respond_to? :permit!
+      end
+
       @permitted = true
       self
     end
