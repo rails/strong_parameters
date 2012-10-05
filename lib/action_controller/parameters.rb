@@ -44,6 +44,7 @@ module ActionController
         case filter
         when Symbol, String then
           params[filter] = self[filter] if has_key?(filter)
+          keys.grep(/\A#{Regexp.escape(filter)}\(\di\)\z/).each { |key| params[key] = self[key] }
         when Hash then
           self.slice(*filter.keys).each do |key, value|
             return unless value
