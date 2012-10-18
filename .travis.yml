@@ -1,0 +1,11 @@
+language: ruby
+
+rvm:
+  - 1.9.3
+
+env:
+  - ACTIONPACK_VERSION=3.1.8
+  - ACTIONPACK_VERSION=3.2.8
+
+notifications:
+  email: false
