@@ -86,6 +86,17 @@ module ActionController
       end
     end
 
+    protected
+      def convert_value(value)
+        if value.class == Hash
+          self.class.new_from_hash_copying_default(value)
+        elsif value.is_a?(Array)
+          value.dup.replace(value.map { |e| convert_value(e) })
+        else
+          value
+        end
+      end
+
     private
       def convert_hashes_to_parameters(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)

@@ -8,6 +8,7 @@ class StrongParametersControllerGeneratorTest < Rails::Generators::TestCase
   setup :prepare_destination
 
   def test_controller_content
+    Rails.stubs(:application).returns(nil)
     run_generator
 
     assert_file "app/controllers/users_controller.rb" do |content|

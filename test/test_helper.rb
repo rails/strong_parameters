@@ -3,6 +3,7 @@ ENV["RAILS_ENV"] = "test"
 
 require 'test/unit'
 require 'strong_parameters'
+require 'mocha'
 
 module ActionController
   SharedTestRoutes = ActionDispatch::Routing::RouteSet.new
