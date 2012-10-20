@@ -48,6 +48,12 @@ every model you want protected.
       include ActiveModel::ForbiddenAttributesProtection
     end
 
+If you want to now disable the default whitelisting that occurs in later versions of Rails, change the +config.active_record.whitelist_attributes+ property in your +config/application.rb+:
+
+    config.active_record.whitelist_attributes = false
+
+This will allow you to remove / not have to use +attr_accessible+ and do mass assignment inside your code and tests. 
+
 == Compatibility
 
 This plugin is only fully compatible with Rails versions 3.1 and 3.2 but not 4.0+, as it is part of Rails Core in 4.0.
