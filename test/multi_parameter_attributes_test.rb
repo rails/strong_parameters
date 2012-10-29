@@ -4,7 +4,7 @@ require 'action_controller/parameters'
 class MultiParameterAttributesTest < ActiveSupport::TestCase
   test "permitted multi-parameter attribute keys" do
     params = ActionController::Parameters.new({
-      book: {
+      :book => {
         "shipped_at(1i)"   => "2012",
         "shipped_at(2i)"   => "3",
         "shipped_at(3i)"   => "25",
@@ -18,7 +18,7 @@ class MultiParameterAttributesTest < ActiveSupport::TestCase
       }
     })
 
-    permitted = params.permit book: [ :shipped_at, :price ]
+    permitted = params.permit :book => [ :shipped_at, :price ]
 
     assert permitted.permitted?
 

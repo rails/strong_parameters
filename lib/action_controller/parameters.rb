@@ -72,7 +72,7 @@ module ActionController
 
     def fetch(key, *args)
       convert_hashes_to_parameters(key, super)
-    rescue KeyError
+    rescue KeyError, IndexError
       raise ActionController::ParameterMissing.new(key)
     end
 

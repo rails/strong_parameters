@@ -3,8 +3,8 @@ require 'action_controller/parameters'
 
 class ParametersTaintTest < ActiveSupport::TestCase
   setup do
-    @params = ActionController::Parameters.new({ person: { 
-      age: "32", name: { first: "David", last: "Heinemeier Hansson" }
+    @params = ActionController::Parameters.new({ :person => {
+      :age => "32", :name => { :first => "David", :last => "Heinemeier Hansson" }
     }})
   end
 
@@ -34,22 +34,22 @@ class ParametersTaintTest < ActiveSupport::TestCase
   end
 
   test "permitted is sticky on mutators" do
-    assert !@params.delete_if { |k| k == :person }.permitted?
-    assert !@params.keep_if { |k,v| k == :person }.permitted?
+    assert !@params.delete_if { |k, v| k == :person }.permitted?
+    assert !@params.keep_if { |k, v| k == :person }.permitted?
   end
 
   test "permitted is sticky beyond merges" do
-    assert !@params.merge(a: "b").permitted?
+    assert !@params.merge(:a => "b").permitted?
   end
 
   test "modifying the parameters" do
     @params[:person][:hometown] = "Chicago"
-    @params[:person][:family] = { brother: "Jonas" }
+    @params[:person][:family] = { :brother => "Jonas" }
 
     assert_equal "Chicago", @params[:person][:hometown]
     assert_equal "Jonas", @params[:person][:family][:brother]
   end
-  
+
   test "permitting parameters that are not there should not include the keys" do
     assert !@params.permit(:person, :funky).has_key?(:funky)
   end
