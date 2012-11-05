@@ -25,6 +25,7 @@ class ParametersTaintTest < ActiveSupport::TestCase
   test "not permitted is sticky on accessors" do
     assert !@params.slice(:person).permitted?
     assert !@params[:person][:name].permitted?
+    assert !@params[:person].except(:name).permitted?
 
     @params.each { |key, value| assert(!value.permitted?) if key == "person" }
 
