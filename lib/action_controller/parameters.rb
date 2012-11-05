@@ -77,7 +77,9 @@ module ActionController
     end
 
     def slice(*keys)
-      self.class.new(super)
+      self.class.new(super).tap do |new_instance|
+        new_instance.instance_variable_set :@permitted, @permitted
+      end
     end
 
     def dup
