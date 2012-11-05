@@ -26,7 +26,7 @@ class ParametersTaintTest < ActiveSupport::TestCase
     assert !@params.slice(:person).permitted?
     assert !@params[:person][:name].permitted?
 
-    @params.each { |key, value| assert(value.permitted?) if key == :person }
+    @params.each { |key, value| assert(!value.permitted?) if key == "person" }
 
     assert !@params.fetch(:person).permitted?
 
@@ -34,8 +34,8 @@ class ParametersTaintTest < ActiveSupport::TestCase
   end
 
   test "permitted is sticky on mutators" do
-    assert !@params.delete_if { |k, v| k == :person }.permitted?
-    assert !@params.keep_if { |k, v| k == :person }.permitted?
+    assert !@params.delete_if { |k, v| k == "person" }.permitted?
+    assert !@params.keep_if { |k, v| k == "person" }.permitted?
   end
 
   test "permitted is sticky beyond merges" do
