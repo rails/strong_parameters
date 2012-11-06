@@ -49,13 +49,13 @@ class ParametersTaintTest < ActiveSupport::TestCase
 
   test "not permitted is sticky on mutators" do
     assert !@params.delete_if { |k, v| k == "person" }.permitted?
-    assert !@params.keep_if { |k, v| k == "person" }.permitted?
+    assert !@params.keep_if { |k, v| k == "person" }.permitted? if @params.respond_to?(:keep_if)
   end
 
   test "permitted is sticky on mutators" do
     @params.permit!
     assert @params.delete_if { |k, v| k == "person" }.permitted?
-    assert @params.keep_if { |k, v| k == "person" }.permitted?
+    assert @params.keep_if { |k, v| k == "person" }.permitted? if @params.respond_to?(:keep_if)
   end
 
   test "not permitted is sticky beyond merges" do
