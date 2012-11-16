@@ -57,3 +57,4 @@ This will allow you to remove / not have to use +attr_accessible+ and do mass as
 == Compatibility
 
 This plugin is only fully compatible with Rails versions 3.0, 3.1 and 3.2 but not 4.0+, as it is part of Rails Core in 4.0.
+An unofficial Rails 2 version is {strong_parameters_rails2}[https://github.com/grosser/strong_parameters/tree/rails2].
