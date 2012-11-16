@@ -6,13 +6,7 @@ rescue LoadError
   raise 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
 
-begin
-  require 'rdoc/task'
-rescue LoadError
-  require 'rdoc/rdoc'
-  require 'rake/rdoctask'
-  RDoc::Task = Rake::RDocTask
-end
+require 'rdoc/task'
 
 RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
