@@ -6,6 +6,7 @@ rvm:
   - 1.9.3
 
 gemfile:
+  - test/gemfiles/Gemfile.rails-3.0.x
   - test/gemfiles/Gemfile.rails-3.1.x
   - test/gemfiles/Gemfile.rails-3.2.x
 
