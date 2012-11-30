@@ -46,6 +46,8 @@ module ActionController
           params[filter] = self[filter] if has_key?(filter)
           keys.grep(/\A#{Regexp.escape(filter.to_s)}\(\d+[if]?\)\z/).each { |key| params[key] = self[key] }
         when Hash then
+          filter = filter.with_indifferent_access
+
           self.slice(*filter.keys).each do |key, value|
             return unless value
 
