@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["David Heinemeier Hansson"]
   s.email       = ["david@heinemeierhansson.com"]
   s.summary     = "Permitted and required parameters for Action Pack"
+  s.homepage    = "https://github.com/rails/strong_parameters"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["MIT-LICENSE", "Rakefile", "README.rdoc"]
   s.test_files = Dir["test/**/*"]
