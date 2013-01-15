@@ -13,5 +13,3 @@ module ActiveModel
     end
   end
 end
-
-ActiveModel.autoload :ForbiddenAttributesProtection
