@@ -14,19 +14,19 @@ class StrongParametersControllerGeneratorTest < Rails::Generators::TestCase
     assert_file "app/controllers/users_controller.rb" do |content|
 
       assert_instance_method :create, content do |m|
-        assert_match(/@user = User\.new\(user_params\)/, m)
-        assert_match(/@user\.save/, m)
-        assert_match(/@user\.errors/, m)
+        assert_match '@user = User.new(user_params)', m
+        assert_match '@user.save', m
+        assert_match '@user.errors', m
       end
 
       assert_instance_method :update, content do |m|
-        assert_match(/@user = User\.find\(params\[:id\]\)/, m)
-        assert_match(/@user\.update_attributes\(user_params\)/, m)
-        assert_match(/@user\.errors/, m)
+        assert_match '@user = User.find(params[:id])', m
+        assert_match '@user.update_attributes(user_params)', m
+        assert_match '@user.errors', m
       end
 
-      assert_match(/def user_params/, content)
-      assert_match(/params\.require\(:user\)\.permit\(:age, :name\)/, content)
+      assert_match 'def user_params', content
+      assert_match 'params.require(:user).permit(:age, :name)', content
     end
   end
 end
