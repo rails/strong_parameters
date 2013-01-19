@@ -48,7 +48,7 @@ module ActionController
         return unless value
 
         if filter[key] == []
-          # Declaration {:coment_ids => []}.
+          # Declaration {:comment_ids => []}.
           array_of_atomics_filter(params, key)
         else
           # Declaration {:user => :name} or {:user => [:name, :age, {:adress => ...}]}.
