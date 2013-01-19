@@ -2,6 +2,10 @@ require 'test_helper'
 require 'action_controller/parameters'
 
 class NestedParametersTest < ActiveSupport::TestCase
+  def assert_filtered_out(params, key)
+    assert !params.has_key?(key), "the key #{key.inspect} has not been ignored"
+  end
+
   test "permitted nested parameters" do
     params = ActionController::Parameters.new({
       :book => {
@@ -27,9 +31,10 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_equal "William Shakespeare", permitted[:book][:authors][0][:name]
     assert_equal "Christopher Marlowe", permitted[:book][:authors][1][:name]
     assert_equal 200, permitted[:book][:details][:pages]
-    assert_nil permitted[:book][:details][:genre]
-    assert_nil permitted[:book][:authors][1][:born]
-    assert_nil permitted[:magazine]
+
+    assert_filtered_out permitted, :magazine
+    assert_filtered_out permitted[:book][:details], :genre
+    assert_filtered_out permitted[:book][:authors][1], :born
   end
 
   test "permitted nested parameters with a string or a symbol as a key" do
@@ -149,8 +154,9 @@ class NestedParametersTest < ActiveSupport::TestCase
 
     assert_not_nil permitted[:book][:authors_attributes]['-1']
     assert_not_nil permitted[:book][:authors_attributes]['-2']
-    assert_nil permitted[:book][:authors_attributes]['-1'][:age_of_death]
     assert_equal 'William Shakespeare', permitted[:book][:authors_attributes]['-1'][:name]
     assert_equal 'Unattributed Assistant', permitted[:book][:authors_attributes]['-2'][:name]
+
+    assert_filtered_out permitted[:book][:authors_attributes]['-1'], :age_of_death
   end
 end
