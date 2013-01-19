@@ -45,7 +45,7 @@ To declare that the value in +params+ must be an array of strings or integers ma
 
 You can also use permit on nested parameters, like:
 
-    params.permit(:name, :emails => [], friends: [ :name, { family: [ :name ] }])
+    params.permit(:name, {:emails => []}, :friends => [ :name, { :family => [ :name ] }])
 
 Thanks to Nick Kallen for the permit idea!
 
