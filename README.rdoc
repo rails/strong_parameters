@@ -35,7 +35,7 @@ Given
 
     params.permit(:id)
 
-they key +:id+ will pass the whitelisting if it appears in +params+ and it has a string or integer associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
+the key +:id+ will pass the whitelisting if it appears in +params+ and it has a string or integer associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
 
 To declare that the value in +params+ must be an array of strings or integers map the key to an empty array:
 
