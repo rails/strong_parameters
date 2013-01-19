@@ -53,13 +53,13 @@ module ActionController
 
             key = key.to_sym
 
-            params[key] = each_element(value) do |value|
+            params[key] = each_element(value) do |element|
               # filters are a Hash, so we expect value to be a Hash too
-              next if filter.is_a?(Hash) && !value.is_a?(Hash)
+              next if filter.is_a?(Hash) && !element.is_a?(Hash)
 
-              value = self.class.new(value) if !value.respond_to?(:permit)
+              element = self.class.new(element) if !element.respond_to?(:permit)
 
-              value.permit(*Array.wrap(filter[key]))
+              element.permit(*Array.wrap(filter[key]))
             end
           end
         end
