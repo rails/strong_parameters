@@ -29,9 +29,23 @@ In addition, parameters can be marked as required and flow through a predefined 
         end
     end
 
+== Atomic Values
+
+Given
+
+    params.permit(:id)
+
+they key +:id+ will pass the whitelisting if it appears in +params+ and it has a string or integer associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
+
+To declare that the value in +params+ must be an array of strings or integers map the key to an empty array:
+
+    params.permit(:id => [])
+
+== Nested Parameters
+
 You can also use permit on nested parameters, like:
 
-    params.permit(:name, friends: [ :name, { family: [ :name ] }])
+    params.permit(:name, :emails => [], friends: [ :name, { family: [ :name ] }])
 
 Thanks to Nick Kallen for the permit idea!
 

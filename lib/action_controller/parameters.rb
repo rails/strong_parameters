@@ -12,7 +12,79 @@ module ActionController
     end
   end
 
+  module Filtering
+    def atomic?(value)
+      # We allow Integer for backwards compatibility. Parameters coming from web
+      # requests are strings, but it is not uncommon that users set integer IDs
+      # in controller tests, where the hash is passed as is to the controller.
+      #
+      # Note that we short-circuit the common case first.
+      value.is_a?(String) || value.is_a?(Integer)
+    end
+
+    def array_of_atomics?(value)
+      if value.is_a?(Array)
+        value.all? {|_| atomic?(_)}
+      end
+    end
+
+    def atomic_filter(params, key)
+      if has_key?(key) && atomic?(self[key])
+        params[key] = self[key]
+      end
+
+      keys.grep(/\A#{Regexp.escape(key.to_s)}\(\d+[if]?\)\z/).each do |key|
+        if atomic?(self[key])
+          params[key] = self[key]
+        end
+      end
+    end
+
+    def hash_filter(params, filter)
+      filter = filter.with_indifferent_access
+
+      # Slicing filters out non-declared keys.
+      slice(*filter.keys).each do |key, value|
+        return unless value
+
+        if filter[key] == []
+          # Declaration {:coment_ids => []}.
+          array_of_atomics_filter(params, key)
+        else
+          # Declaration {:user => :name} or {:user => [:name, :age, {:adress => ...}]}.
+          params[key] = each_element(value) do |element|
+            if element.is_a?(Hash)
+              element = self.class.new(element) unless element.respond_to?(:permit)
+              element.permit(*Array.wrap(filter[key]))
+            end
+          end
+        end
+      end
+    end
+
+    def array_of_atomics_filter(params, key)
+      if has_key?(key) && array_of_atomics?(self[key])
+        params[key] = self[key]
+      end
+    end
+
+    def each_element(value)
+      if value.is_a?(Array)
+        value.map { |el| yield el }.compact
+        # fields_for on an array of records uses numeric hash keys.
+      elsif value.is_a?(Hash) && value.keys.all? { |k| k =~ /\A-?\d+\z/ }
+        hash = value.class.new
+        value.each { |k,v| hash[k] = yield v }
+        hash
+      else
+        yield value
+      end
+    end
+  end
+
   class Parameters < ActiveSupport::HashWithIndifferentAccess
+    include Filtering
+
     attr_accessor :permitted
     alias :permitted? :permitted
 
@@ -42,26 +114,10 @@ module ActionController
 
       filters.each do |filter|
         case filter
-        when Symbol, String then
-          params[filter] = self[filter] if has_key?(filter)
-          keys.grep(/\A#{Regexp.escape(filter.to_s)}\(\d+[if]?\)\z/).each { |key| params[key] = self[key] }
+        when Symbol, String
+          atomic_filter(params, filter)
         when Hash then
-          filter = filter.with_indifferent_access
-
-          self.slice(*filter.keys).each do |key, value|
-            return unless value
-
-            key = key.to_sym
-
-            params[key] = each_element(value) do |element|
-              # filters are a Hash, so we expect value to be a Hash too
-              next if filter.is_a?(Hash) && !element.is_a?(Hash)
-
-              element = self.class.new(element) if !element.respond_to?(:permit)
-
-              element.permit(*Array.wrap(filter[key]))
-            end
-          end
+          hash_filter(params, filter)
         end
       end
 
@@ -109,19 +165,6 @@ module ActionController
         else
           # Convert to Parameters on first access
           self[key] = self.class.new(value)
-        end
-      end
-
-      def each_element(object)
-        if object.is_a?(Array)
-          object.map { |el| yield el }.compact
-        # fields_for on an array of records uses numeric hash keys
-        elsif object.is_a?(Hash) && object.keys.all? { |k| k =~ /\A-?\d+\z/ }
-          hash = object.class.new
-          object.each { |k,v| hash[k] = yield v }
-          hash
-        else
-          yield object
         end
       end
   end
