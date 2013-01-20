@@ -29,15 +29,17 @@ In addition, parameters can be marked as required and flow through a predefined 
         end
     end
 
-== Atomic Values
+== Permitted Scalar Values
 
 Given
 
     params.permit(:id)
 
-the key +:id+ will pass the whitelisting if it appears in +params+ and it has a string or integer associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
+the key +:id+ will pass the whitelisting if it appears in +params+ and it has a permitted scalar value associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
 
-To declare that the value in +params+ must be an array of strings or integers map the key to an empty array:
+The permitted scalar types are +String+, +Symbol+, +NilClass+, +Numeric+, +TrueClass+, +FalseClass+, +Date+, +Time+, +DateTime+, +StringIO+, and +IO+.
+
+To declare that the value in +params+ must be an array of permitted scalar values map the key to an empty array:
 
     params.permit(:id => [])
 

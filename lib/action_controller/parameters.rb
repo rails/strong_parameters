@@ -1,3 +1,7 @@
+require 'date'
+require 'bigdecimal'
+require 'stringio'
+
 require 'active_support/concern'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'action_controller'
@@ -12,79 +16,8 @@ module ActionController
     end
   end
 
-  module Filtering
-    def atomic?(value)
-      # We allow Integer for backwards compatibility. Parameters coming from web
-      # requests are strings, but it is not uncommon that users set integer IDs
-      # in controller tests, where the hash is passed as is to the controller.
-      #
-      # Note that we short-circuit the common case first.
-      value.is_a?(String) || value.is_a?(Integer)
-    end
-
-    def array_of_atomics?(value)
-      if value.is_a?(Array)
-        value.all? {|_| atomic?(_)}
-      end
-    end
-
-    def atomic_filter(params, key)
-      if has_key?(key) && atomic?(self[key])
-        params[key] = self[key]
-      end
-
-      keys.grep(/\A#{Regexp.escape(key.to_s)}\(\d+[if]?\)\z/).each do |key|
-        if atomic?(self[key])
-          params[key] = self[key]
-        end
-      end
-    end
-
-    def hash_filter(params, filter)
-      filter = filter.with_indifferent_access
-
-      # Slicing filters out non-declared keys.
-      slice(*filter.keys).each do |key, value|
-        return unless value
-
-        if filter[key] == []
-          # Declaration {:comment_ids => []}.
-          array_of_atomics_filter(params, key)
-        else
-          # Declaration {:user => :name} or {:user => [:name, :age, {:adress => ...}]}.
-          params[key] = each_element(value) do |element|
-            if element.is_a?(Hash)
-              element = self.class.new(element) unless element.respond_to?(:permit)
-              element.permit(*Array.wrap(filter[key]))
-            end
-          end
-        end
-      end
-    end
-
-    def array_of_atomics_filter(params, key)
-      if has_key?(key) && array_of_atomics?(self[key])
-        params[key] = self[key]
-      end
-    end
-
-    def each_element(value)
-      if value.is_a?(Array)
-        value.map { |el| yield el }.compact
-        # fields_for on an array of records uses numeric hash keys.
-      elsif value.is_a?(Hash) && value.keys.all? { |k| k =~ /\A-?\d+\z/ }
-        hash = value.class.new
-        value.each { |k,v| hash[k] = yield v }
-        hash
-      else
-        yield value
-      end
-    end
-  end
 
   class Parameters < ActiveSupport::HashWithIndifferentAccess
-    include Filtering
-
     attr_accessor :permitted
     alias :permitted? :permitted
 
@@ -115,7 +48,7 @@ module ActionController
       filters.each do |filter|
         case filter
         when Symbol, String
-          atomic_filter(params, filter)
+          permitted_scalar_filter(params, filter)
         when Hash then
           hash_filter(params, filter)
         end
@@ -159,12 +92,101 @@ module ActionController
       end
 
     private
+
       def convert_hashes_to_parameters(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)
           value
         else
           # Convert to Parameters on first access
           self[key] = self.class.new(value)
+        end
+      end
+
+      #
+      # --- Filtering ----------------------------------------------------------
+      #
+
+      # This is a white list of permitted scalar types that includes the ones
+      # supported in XML and JSON requests.
+      #
+      # This list is in particular used to filter ordinary requests, String goes
+      # as first element to quickly short-circuit the common case.
+      #
+      # If you modify this collection please update the README.
+      PERMITTED_SCALAR_TYPES = [
+        String,
+        Symbol,
+        NilClass,
+        Numeric,
+        TrueClass,
+        FalseClass,
+        Date,
+        Time,
+        # DateTimes are Dates, we document the type but avoid the redundant check.
+        StringIO,
+        IO,
+      ]
+
+      def permitted_scalar?(value)
+        PERMITTED_SCALAR_TYPES.any? {|type| value.is_a?(type)}
+      end
+
+      def array_of_permitted_scalars?(value)
+        if value.is_a?(Array)
+          value.all? {|element| permitted_scalar?(element)}
+        end
+      end
+
+      def permitted_scalar_filter(params, key)
+        if has_key?(key) && permitted_scalar?(self[key])
+          params[key] = self[key]
+        end
+
+        keys.grep(/\A#{Regexp.escape(key.to_s)}\(\d+[if]?\)\z/).each do |key|
+          if permitted_scalar?(self[key])
+            params[key] = self[key]
+          end
+        end
+      end
+
+      def array_of_permitted_scalars_filter(params, key)
+        if has_key?(key) && array_of_permitted_scalars?(self[key])
+          params[key] = self[key]
+        end
+      end
+
+      def hash_filter(params, filter)
+        filter = filter.with_indifferent_access
+
+        # Slicing filters out non-declared keys.
+        slice(*filter.keys).each do |key, value|
+          return unless value
+
+          if filter[key] == []
+            # Declaration {:comment_ids => []}.
+            array_of_permitted_scalars_filter(params, key)
+          else
+            # Declaration {:user => :name} or {:user => [:name, :age, {:adress => ...}]}.
+            params[key] = each_element(value) do |element|
+              if element.is_a?(Hash)
+                element = self.class.new(element) unless element.respond_to?(:permit)
+                element.permit(*Array.wrap(filter[key]))
+              end
+            end
+          end
+        end
+      end
+
+      def each_element(value)
+        if value.is_a?(Array)
+          value.map { |el| yield el }.compact
+          # fields_for on an array of records uses numeric hash keys.
+        elsif value.is_a?(Hash) && value.keys.all? { |k| k =~ /\A-?\d+\z/ }
+          hash = value.class.new
+          value.each { |k,v| hash[k] = yield v }
+          hash
+        else
+          yield value
         end
       end
   end

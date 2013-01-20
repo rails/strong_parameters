@@ -7,7 +7,7 @@ class NestedParametersTest < ActiveSupport::TestCase
   end
 
   #
-  # -- Basic interface ---------------------------------------------------------
+  # --- Basic interface --------------------------------------------------------
   #
 
   # --- nothing ----------------------------------------------------------------
@@ -21,15 +21,23 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   # --- key --------------------------------------------------------------------
 
-  test 'key: atomic values' do
-    params = ActionController::Parameters.new(:id => '1234')
-    permitted = params.permit(:id)
-    assert_equal '1234', permitted[:id]
+  test 'key: permitted scalar values' do
+    values  = ['a', :a, nil]
+    values += [0, 1.0, 2**128, BigDecimal.new(1)]
+    values += [true, false]
+    values += [Date.today, Time.now, DateTime.now]
+    values += [StringIO.new]
 
-    %w(i f).each do |suffix|
-      params = ActionController::Parameters.new("foo(000#{suffix})" => '5678')
-      permitted = params.permit(:foo)
-      assert_equal '5678', permitted["foo(000#{suffix})"]
+    values.each do |value|
+      params = ActionController::Parameters.new(:id => value)
+      permitted = params.permit(:id)
+      assert_equal value, permitted[:id]
+
+      %w(i f).each do |suffix|
+        params = ActionController::Parameters.new("foo(000#{suffix})" => value)
+        permitted = params.permit(:foo)
+        assert_equal value, permitted["foo(000#{suffix})"]
+      end
     end
   end
 
@@ -68,7 +76,7 @@ class NestedParametersTest < ActiveSupport::TestCase
     end
   end
 
-  test 'key: non-atomic objects are filtered out' do
+  test 'key: non-permitted scalar values are filtered out' do
     params = ActionController::Parameters.new(:id => Object.new)
     permitted = params.permit(:id)
     assert_filtered_out permitted, :id
@@ -94,7 +102,7 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_equal [], permitted[:id]
   end
 
-  test 'key to empty array: arrays of atomics pass' do
+  test 'key to empty array: arrays of permitted scalars pass' do
     [['foo'], [1], ['foo', 'bar'], [1, 2, 3]].each do |array|
       params = ActionController::Parameters.new(:id => array)
       permitted = params.permit(:id => [])
@@ -102,17 +110,17 @@ class NestedParametersTest < ActiveSupport::TestCase
     end
   end
 
-  test 'key to empty array: atomic values do not pass' do
-    ['foo', 1].each do |atomic|
-      params = ActionController::Parameters.new(:id => atomic)
+  test 'key to empty array: permitted scalar values do not pass' do
+    ['foo', 1].each do |permitted_scalar|
+      params = ActionController::Parameters.new(:id => permitted_scalar)
       permitted = params.permit(:id => [])
       assert_filtered_out permitted, :id
     end
   end
 
-  test 'key to empty array: arrays of non-atomic do not pass' do
-    [[Object.new], [[]], [[1]], [{}], [{:id => '1'}]].each do |non_atomic|
-      params = ActionController::Parameters.new(:id => non_atomic)
+  test 'key to empty array: arrays of non-permitted scalar do not pass' do
+    [[Object.new], [[]], [[1]], [{}], [{:id => '1'}]].each do |non_permitted_scalar|
+      params = ActionController::Parameters.new(:id => non_permitted_scalar)
       permitted = params.permit(:id => [])
       assert_filtered_out permitted, :id
     end
