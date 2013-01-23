@@ -16,10 +16,24 @@ module ActionController
     end
   end
 
+  class UnpermittedParameters < IndexError
+    attr_reader :params
+
+    def initialize(params)
+      @params = params
+      super("found unpermitted parameters: #{params.join(", ")}")
+    end
+  end
 
   class Parameters < ActiveSupport::HashWithIndifferentAccess
     attr_accessor :permitted
     alias :permitted? :permitted
+    
+    cattr_accessor :action_on_unpermitted_parameters, :instance_accessor => false
+
+    # Never raise an UnpermittedParameters exception because of these params
+    # are present. They are added by Rails and it's of no concern.
+    NEVER_UNPERMITTED_PARAMS = %w( controller action )
 
     def initialize(attributes = nil)
       super(attributes)
@@ -53,6 +67,8 @@ module ActionController
           hash_filter(params, filter)
         end
       end
+
+      unpermitted_parameters!(params) if self.class.action_on_unpermitted_parameters
 
       params.permit!
     end
@@ -188,6 +204,25 @@ module ActionController
         else
           yield value
         end
+      end
+
+      def unpermitted_parameters!(params)  
+        return unless self.class.action_on_unpermitted_parameters
+        
+        unpermitted_keys = unpermitted_keys(params)
+
+        if unpermitted_keys.any?  
+          case self.class.action_on_unpermitted_parameters  
+          when :log  
+            ActionController::Base.logger.debug "Unpermitted parameters: #{unpermitted_keys.join(", ")}"  
+          when :raise  
+            raise ActionController::UnpermittedParameters.new(unpermitted_keys)  
+          end  
+        end  
+      end  
+  
+      def unpermitted_keys(params)  
+        self.keys - params.keys - NEVER_UNPERMITTED_PARAMS
       end
   end
 
