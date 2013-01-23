@@ -5,6 +5,7 @@ require 'stringio'
 require 'active_support/concern'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'action_controller'
+require 'action_dispatch/http/upload'
 
 module ActionController
   class ParameterMissing < IndexError
@@ -141,6 +142,7 @@ module ActionController
         # DateTimes are Dates, we document the type but avoid the redundant check.
         StringIO,
         IO,
+        ActionDispatch::Http::UploadedFile,
       ]
 
       def permitted_scalar?(value)

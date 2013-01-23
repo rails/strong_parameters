@@ -37,7 +37,7 @@ Given
 
 the key +:id+ will pass the whitelisting if it appears in +params+ and it has a permitted scalar value associated. Otherwise the key is going to be filtered out, so arrays, hashes, or any other objects cannot be injected.
 
-The permitted scalar types are +String+, +Symbol+, +NilClass+, +Numeric+, +TrueClass+, +FalseClass+, +Date+, +Time+, +DateTime+, +StringIO+, and +IO+.
+The permitted scalar types are +String+, +Symbol+, +NilClass+, +Numeric+, +TrueClass+, +FalseClass+, +Date+, +Time+, +DateTime+, +StringIO+, +IO+, and +ActionDispatch::Http::UploadedFile+.
 
 To declare that the value in +params+ must be an array of permitted scalar values map the key to an empty array:
 

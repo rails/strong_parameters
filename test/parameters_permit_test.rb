@@ -1,5 +1,6 @@
 require 'test_helper'
 require 'action_controller/parameters'
+require 'action_dispatch/http/upload'
 
 class NestedParametersTest < ActiveSupport::TestCase
   def assert_filtered_out(params, key)
@@ -26,7 +27,7 @@ class NestedParametersTest < ActiveSupport::TestCase
     values += [0, 1.0, 2**128, BigDecimal.new(1)]
     values += [true, false]
     values += [Date.today, Time.now, DateTime.now]
-    values += [StringIO.new]
+    values += [StringIO.new, STDOUT, ActionDispatch::Http::UploadedFile.new(:tempfile => __FILE__)]
 
     values.each do |value|
       params = ActionController::Parameters.new(:id => value)
