@@ -24,7 +24,7 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   test 'key: permitted scalar values' do
     values  = ['a', :a, nil]
-    values += [0, 1.0, 2**128, BigDecimal.new(1)]
+    values += [0, 1.0, 2**128, BigDecimal.new('1')]
     values += [true, false]
     values += [Date.today, Time.now, DateTime.now]
     values += [StringIO.new, STDOUT, ActionDispatch::Http::UploadedFile.new(:tempfile => __FILE__)]
@@ -266,7 +266,7 @@ class NestedParametersTest < ActiveSupport::TestCase
 
     assert_not_nil permitted[:book][:authors_attributes]['0']
     assert_not_nil permitted[:book][:authors_attributes]['1']
-    assert_empty permitted[:book][:authors_attributes]['2']
+    assert permitted[:book][:authors_attributes]['2'].empty?
     assert_equal 'William Shakespeare', permitted[:book][:authors_attributes]['0'][:name]
     assert_equal 'Unattributed Assistant', permitted[:book][:authors_attributes]['1'][:name]
 
