@@ -47,7 +47,9 @@ To declare that the value in +params+ must be an array of permitted scalar value
 
 You can also use permit on nested parameters, like:
 
-    params.permit(:name, {:emails => []}, :friends => [ :name, { :family => [ :name ] }])
+    params.permit(:name, {:emails => []}, :friends => [ :name, { :family => [ :name ], :hobbies => [] }])
+
+This declaration whitelists the +name+, +emails+ and +friends+ attributes. It is expected that +emails+ will be an array of permitted scalar values and that +friends+ will be an array of resources with specific attributes : they should have a +name+ attribute (any permitted scalar values allowed), a +hobbies+ attribute as an array of permitted scalar values, and a +family+ attribute which is restricted to having a +name+ (any permitted scalar values allowed, too).
 
 Thanks to Nick Kallen for the permit idea!
 
