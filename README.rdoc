@@ -72,6 +72,10 @@ every model you want protected.
       include ActiveModel::ForbiddenAttributesProtection
     end
 
+Alternatively, you can protect all Active Record resources by default by creating an initializer and pasting the line:
+
+    ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
+
 If you want to now disable the default whitelisting that occurs in later versions of Rails, change the +config.active_record.whitelist_attributes+ property in your +config/application.rb+:
 
     config.active_record.whitelist_attributes = false
