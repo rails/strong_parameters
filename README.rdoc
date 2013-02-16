@@ -72,7 +72,7 @@ every model you want protected.
       include ActiveModel::ForbiddenAttributesProtection
     end
 
-Alternatively, you can protect all ActiveRecord resources by default by creating an initializer and pasting the line:
+Alternatively, you can protect all Active Record resources by default by creating an initializer and pasting the line:
 
     ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
 
