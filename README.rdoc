@@ -67,7 +67,11 @@ that you will need to sanitize untrusted data used for mass assignment when in u
 For example, if you retrieve JSON data from a third party API call and pass the unchecked parsed result on to
 +Model.create+, undesired mass assignments could take place.  You can alleviate this risk by slicing the hash data,
 or wrapping the data in a new instance of +ActionController::Parameters+ and declaring permissions the same as
-you would in a controller.
+you would in a controller.  For example:
+
+    raw_parameters = { :email => "john@example.com", :name => "John", :admin => true }
+    parameters = ActionController::Parameters.new(raw_parameters)
+    user = User.create(parameters.permit(:name, :email))
 
 == Installation
 
