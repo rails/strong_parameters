@@ -59,6 +59,20 @@ By default parameter keys that are not explicitly permitted will be logged in th
 
 Additionally, this behaviour can be changed by changing the +config.action_controller.action_on_unpermitted_parameters+ property in your environment files. If set to +:log+ the unpermitted attributes will be logged, if set to +:raise+ an exception will be raised.
 
+== Use Outside of Controllers
+
+While Strong Parameters will enforce permitted and required values in your application controllers, keep in mind
+that you will need to sanitize untrusted data used for mass assignment when in use outside of controllers.
+
+For example, if you retrieve JSON data from a third party API call and pass the unchecked parsed result on to
++Model.create+, undesired mass assignments could take place.  You can alleviate this risk by slicing the hash data,
+or wrapping the data in a new instance of +ActionController::Parameters+ and declaring permissions the same as
+you would in a controller.  For example:
+
+    raw_parameters = { :email => "john@example.com", :name => "John", :admin => true }
+    parameters = ActionController::Parameters.new(raw_parameters)
+    user = User.create(parameters.permit(:name, :email))
+
 == Installation
 
 In Gemfile:
