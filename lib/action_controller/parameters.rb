@@ -143,6 +143,7 @@ module ActionController
         StringIO,
         IO,
         ActionDispatch::Http::UploadedFile,
+        Rack::Test::UploadedFile,
       ]
 
       def permitted_scalar?(value)
