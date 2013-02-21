@@ -27,7 +27,7 @@ class NestedParametersTest < ActiveSupport::TestCase
     values += [0, 1.0, 2**128, BigDecimal.new('1')]
     values += [true, false]
     values += [Date.today, Time.now, DateTime.now]
-    values += [StringIO.new, STDOUT, ActionDispatch::Http::UploadedFile.new(:tempfile => __FILE__)]
+    values += [StringIO.new, STDOUT, ActionDispatch::Http::UploadedFile.new(:tempfile => __FILE__), Rack::Test::UploadedFile.new(__FILE__)]
 
     values.each do |value|
       params = ActionController::Parameters.new(:id => value)
