@@ -291,4 +291,22 @@ class NestedParametersTest < ActiveSupport::TestCase
 
     assert_filtered_out permitted[:book][:authors_attributes]['-1'], :age_of_death
   end
+
+  test "fields_for_style_nested_params with nested arrays" do
+    params = ActionController::Parameters.new({
+      :book => {
+        :authors_attributes => {
+          :'0' => ['William Shakespeare', '52'],
+          :'1' => ['Unattributed Assistant']
+        }
+      }
+    })
+    permitted = params.permit :book => { :authors_attributes => { :'0' => [], :'1' => [] } }
+
+    assert_not_nil permitted[:book][:authors_attributes]['0']
+    assert_not_nil permitted[:book][:authors_attributes]['1']
+    assert_nil permitted[:book][:authors_attributes]['2']
+    assert_equal 'William Shakespeare', permitted[:book][:authors_attributes]['0'][0]
+    assert_equal 'Unattributed Assistant', permitted[:book][:authors_attributes]['1'][0]
+  end
 end
