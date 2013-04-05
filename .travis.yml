@@ -10,6 +10,11 @@ gemfile:
   - test/gemfiles/Gemfile.rails-3.1.x
   - test/gemfiles/Gemfile.rails-3.2.x
 
+matrix:
+  include:
+    - rvm: 2.0.0
+      gemfile: test/gemfiles/Gemfile.rails-3.2.x
+
 notifications:
   email: false
   irc:
