@@ -114,7 +114,7 @@ Alternatively, you can protect all Active Record resources by default by creatin
 ActiveRecord::Base.send(:include, ActiveModel::ForbiddenAttributesProtection)
 ```
 
-If you want to now disable the default whitelisting that occurs in later versions of Rails, change the `config.active_record.whitelist_attributes` property in your `config/application.rb`:
+If you want to now disable the default whitelisting that occurs in Rails 3.2, change the `config.active_record.whitelist_attributes` property in your `config/application.rb`:
 
 ``` ruby
 config.active_record.whitelist_attributes = false
