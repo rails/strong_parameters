@@ -10,7 +10,6 @@ Rails.application = FakeApplication
 Rails.configuration.action_controller = ActiveSupport::OrderedOptions.new
 
 require 'strong_parameters'
-require 'mocha'
 
 module ActionController
   SharedTestRoutes = ActionDispatch::Routing::RouteSet.new
