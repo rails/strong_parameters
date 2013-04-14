@@ -1,3 +1,4 @@
+[![Travis CI](https://secure.travis-ci.org/rails/rails.png)]([http://travis-ci.org/rails/strong_parameters) [![Gem Version](https://badge.fury.io/rb/strong_parameters.png)](http://badge.fury.io/rb/strong_parameters)
 # Strong Parameters
 
 With this plugin Action Controller parameters are forbidden to be used in Active Model mass assignments until they have been whitelisted. This means you'll have to make a conscious choice about which attributes to allow for mass updating and thus prevent accidentally exposing that which shouldn't be exposed.
