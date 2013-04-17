@@ -22,7 +22,7 @@ module ActionController
 
     def initialize(params)
       @params = params
-      super("found unpermitted parameters: #{params.join(", ")}")
+      super("found unpermitted parameter(s): #{params.join(", ")}")
     end
   end
 
@@ -51,8 +51,12 @@ module ActionController
       self
     end
 
-    def require(key)
-      self[key].presence || raise(ActionController::ParameterMissing.new(key))
+    def require(*keys)
+      if keys.many?
+        require_multiple(keys)
+      else
+        require_single(keys)
+      end
     end
 
     alias :required :require
@@ -98,6 +102,20 @@ module ActionController
     end
 
     protected
+      def require_single(keys)
+        key = keys.first 
+        self[key].presence || raise(ActionController::ParameterMissing.new(key))
+      end
+
+      def require_multiple(keys)
+        missing_keys = keys.select do |key|
+          self[key].blank?
+        end
+
+        raise(ActionController::ParameterMissing.new(missing_keys.join(', '))) if missing_keys.compact.any?
+        self
+      end
+
       def convert_value(value)
         if value.class == Hash
           self.class.new_from_hash_copying_default(value)
@@ -109,7 +127,6 @@ module ActionController
       end
 
     private
-
       def convert_hashes_to_parameters(key, value)
         if value.is_a?(Parameters) || !value.is_a?(Hash)
           value
@@ -217,7 +234,7 @@ module ActionController
         unpermitted_keys = unpermitted_keys(params)
 
         if unpermitted_keys.any?  
-          case self.class.action_on_unpermitted_parameters  
+          case self.class.action_on_unpermitted_parameters
           when :log
             name = "unpermitted_parameters.action_controller"
             ActiveSupport::Notifications.instrument(name, :keys => unpermitted_keys)
@@ -237,7 +254,7 @@ module ActionController
 
     included do
       rescue_from(ActionController::ParameterMissing) do |parameter_missing_exception|
-        render :text => "Required parameter missing: #{parameter_missing_exception.param}", :status => :bad_request
+        render :text => "Required parameter(s) missing: #{parameter_missing_exception.param}", :status => :bad_request
       end
     end
 

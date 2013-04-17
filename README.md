@@ -70,6 +70,16 @@ This declaration whitelists the `name`, `emails` and `friends` attributes. It is
 
 Thanks to Nick Kallen for the permit idea!
 
+## Requiring multiple values
+
+In some cases you might want to require several parameters to be present before proceeding, such as for an API where the params might be a flat hash. You can use `require` to do this:
+
+``` ruby
+params.require(:username, :password).permit(:version)
+```
+
+When used with multiple inputs `require` raises a `ActionController::MissingParameter` error with *all* the missing attributes specified in the message. If no values are missing the params hash is returned unmodified.
+
 ## Handling of Unpermitted Keys
 
 By default parameter keys that are not explicitly permitted will be logged in the development and test environment. In other environments these parameters will simply be filtered out and ignored.
