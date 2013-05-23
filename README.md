@@ -70,6 +70,15 @@ This declaration whitelists the `name`, `emails` and `friends` attributes. It is
 
 Thanks to Nick Kallen for the permit idea!
 
+## Require Multiple Parameters
+
+If you want to make sure that multiple keys are present in a params hash, you can call the method twice:
+
+``` ruby
+params.require(:token)
+params.require(:post).permit(:title)
+```
+
 ## Handling of Unpermitted Keys
 
 By default parameter keys that are not explicitly permitted will be logged in the development and test environment. In other environments these parameters will simply be filtered out and ignored.
