@@ -101,6 +101,10 @@ parameters = ActionController::Parameters.new(raw_parameters)
 user = User.create(parameters.permit(:name, :email))
 ```
 
+## More Examples
+
+Head over to the [Rails guide about Action Controller](http://guides.rubyonrails.org/action_controller_overview.html#more-examples).
+
 ## Installation
 
 In Gemfile:
