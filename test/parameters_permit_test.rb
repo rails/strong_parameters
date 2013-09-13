@@ -95,6 +95,15 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert !permitted.has_key?(:id)
   end
 
+  test 'do not break params filtering on nil values' do
+    params = ActionController::Parameters.new(a: 1, b: [1, 2, 3], c: nil)
+
+    permitted = params.permit(:a, c: [], b: [])
+    assert_equal 1, permitted[:a]
+    assert_equal [1, 2, 3], permitted[:b]
+    assert_equal nil, permitted[:c]
+  end
+
   # --- key to empty array -----------------------------------------------------
 
   test 'key to empty array: empty arrays pass' do
