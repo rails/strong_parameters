@@ -318,4 +318,19 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_equal 'William Shakespeare', permitted[:book][:authors_attributes]['0'][0]
     assert_equal 'Unattributed Assistant', permitted[:book][:authors_attributes]['1'][0]
   end
+
+  test "nested number as key" do
+    params = ActionController::Parameters.new({
+      product: {
+        properties: {
+          '0' => "prop0",
+          '1' => "prop1"
+        }
+      }
+    })
+    params = params.require(:product).permit(:properties => ["0"])
+    assert_not_nil        params[:properties]["0"]
+    assert_nil            params[:properties]["1"]
+    assert_equal "prop0", params[:properties]["0"]
+  end
 end
