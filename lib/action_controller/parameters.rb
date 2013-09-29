@@ -202,13 +202,17 @@ module ActionController
         if value.is_a?(Array)
           value.map { |el| yield el }.compact
           # fields_for on an array of records uses numeric hash keys.
-        elsif value.is_a?(Hash) && value.keys.all? { |k| k =~ /\A-?\d+\z/ }
+        elsif fields_for_style?(value)
           hash = value.class.new
           value.each { |k,v| hash[k] = yield(v, k) }
           hash
         else
           yield value
         end
+      end
+
+      def fields_for_style?(object)
+        object.is_a?(Hash) && object.all? { |k, v| k =~ /\A-?\d+\z/ && v.is_a?(Hash) }
       end
 
       def unpermitted_parameters!(params)  
