@@ -13,7 +13,7 @@ module ActionController
 
     def initialize(param)
       @param = param
-      super("key not found: #{param}")
+      super("param is missing or the value is empty: #{param}")
     end
   end
 
