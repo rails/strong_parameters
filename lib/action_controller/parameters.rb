@@ -17,15 +17,6 @@ module ActionController
     end
   end
 
-  class EmptyParameter < IndexError
-    attr_reader :param
-
-    def initialize(param)
-      @param = param
-      super("value is empty for required key: #{param}")
-    end
-  end
-
   class UnpermittedParameters < IndexError
     attr_reader :params
 
@@ -38,7 +29,7 @@ module ActionController
   class Parameters < ActiveSupport::HashWithIndifferentAccess
     attr_accessor :permitted
     alias :permitted? :permitted
-
+    
     cattr_accessor :action_on_unpermitted_parameters, :instance_accessor => false
 
     # Never raise an UnpermittedParameters exception because of these params
@@ -61,8 +52,7 @@ module ActionController
     end
 
     def require(key)
-      raise(ActionController::ParameterMissing.new(key)) unless self.key?(key)
-      self[key].presence || raise(ActionController::EmptyParameter.new(key))
+      self[key].presence || raise(ActionController::ParameterMissing.new(key))
     end
 
     alias :required :require
@@ -225,23 +215,23 @@ module ActionController
         object.is_a?(Hash) && object.all? { |k, v| k =~ /\A-?\d+\z/ && v.is_a?(Hash) }
       end
 
-      def unpermitted_parameters!(params)
+      def unpermitted_parameters!(params)  
         return unless self.class.action_on_unpermitted_parameters
-
+        
         unpermitted_keys = unpermitted_keys(params)
 
-        if unpermitted_keys.any?
-          case self.class.action_on_unpermitted_parameters
+        if unpermitted_keys.any?  
+          case self.class.action_on_unpermitted_parameters  
           when :log
             name = "unpermitted_parameters.action_controller"
             ActiveSupport::Notifications.instrument(name, :keys => unpermitted_keys)
-          when :raise
-            raise ActionController::UnpermittedParameters.new(unpermitted_keys)
-          end
-        end
-      end
-
-      def unpermitted_keys(params)
+          when :raise  
+            raise ActionController::UnpermittedParameters.new(unpermitted_keys)  
+          end  
+        end  
+      end  
+  
+      def unpermitted_keys(params)  
         self.keys - params.keys - NEVER_UNPERMITTED_PARAMS
       end
   end
@@ -252,10 +242,6 @@ module ActionController
     included do
       rescue_from(ActionController::ParameterMissing) do |parameter_missing_exception|
         render :text => "Required parameter missing: #{parameter_missing_exception.param}", :status => :bad_request
-      end
-
-      rescue_from(ActionController::EmptyParameter) do |empty_parameter_exception|
-        render :text => "Required parameter value is empty: #{empty_parameter_exception.param}", :status => :bad_request
       end
     end
 
