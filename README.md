@@ -14,8 +14,9 @@ class PeopleController < ActionController::Base
   end
 
   # This will pass with flying colors as long as there's a person key in the parameters, otherwise
-  # it'll raise a ActionController::MissingParameter exception, which will get caught by
-  # ActionController::Base and turned into that 400 Bad Request reply.
+  # it'll raise an ActionController::ParameterMissing exception if the key is not present or
+  # it'll raise an ActionController:EmptyParameter exception if the key value is blank,
+  # which will get caught by ActionController::Base and turned into that 400 Bad Request reply.
   def update
     person = current_account.people.find(params[:id])
     person.update_attributes!(person_params)

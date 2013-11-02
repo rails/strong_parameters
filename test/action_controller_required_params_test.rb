@@ -5,6 +5,11 @@ class BooksController < ActionController::Base
     params.require(:book).require(:name)
     head :ok
   end
+
+  def update
+    params.require(:book)
+    head :ok
+  end
 end
 
 class ActionControllerRequiredParamsTest < ActionController::TestCase
@@ -26,5 +31,21 @@ class ActionControllerRequiredParamsTest < ActionController::TestCase
   test "missing parameters will be mentioned in the return" do
     post :create, { :magazine => { :name => "Mjallo!" } }
     assert_equal "Required parameter missing: book", response.body
+  end
+
+  test "empty required parameters will raise an exception" do
+    put :update, { :book => {} }
+    assert_response :bad_request
+
+    put :update, { :book => '' }
+    assert_response :bad_request
+
+    put :update, { :book => nil }
+    assert_response :bad_request
+  end
+
+  test "empty parameters will be mentioned in the return" do
+    put :update, { :book => {} }
+    assert_equal "Required parameter value is empty: book", response.body
   end
 end
