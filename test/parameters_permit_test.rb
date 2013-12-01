@@ -321,8 +321,8 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   test "nested number as key" do
     params = ActionController::Parameters.new({
-      product: {
-        properties: {
+      :product => {
+        :properties => {
           '0' => "prop0",
           '1' => "prop1"
         }
