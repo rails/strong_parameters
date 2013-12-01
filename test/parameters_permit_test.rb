@@ -96,9 +96,9 @@ class NestedParametersTest < ActiveSupport::TestCase
   end
 
   test 'do not break params filtering on nil values' do
-    params = ActionController::Parameters.new(a: 1, b: [1, 2, 3], c: nil)
+    params = ActionController::Parameters.new(:a => 1, :b => [1, 2, 3], :c => nil)
 
-    permitted = params.permit(:a, c: [], b: [])
+    permitted = params.permit(:a, :c => [], :b => [])
     assert_equal 1, permitted[:a]
     assert_equal [1, 2, 3], permitted[:b]
     assert_equal nil, permitted[:c]
@@ -321,8 +321,8 @@ class NestedParametersTest < ActiveSupport::TestCase
 
   test "nested number as key" do
     params = ActionController::Parameters.new({
-      product: {
-        properties: {
+      :product => {
+        :properties => {
           '0' => "prop0",
           '1' => "prop1"
         }
