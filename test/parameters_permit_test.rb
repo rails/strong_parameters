@@ -333,4 +333,11 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_nil            params[:properties]["1"]
     assert_equal "prop0", params[:properties]["0"]
   end
+
+  test 'hashes in array values get wrapped' do
+    params = ActionController::Parameters.new(foo: [{}, {}])
+    params[:foo].each do |hash|
+      assert !hash.permitted?
+    end
+  end
 end
