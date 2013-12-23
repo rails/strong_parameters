@@ -79,7 +79,7 @@ module ActionController
     end
 
     def fetch(key, *args)
-      convert_hashes_to_parameters(key, super)
+      convert_hashes_to_parameters(key, super, false)
     rescue KeyError, IndexError
       raise ActionController::ParameterMissing.new(key)
     end
@@ -110,9 +110,9 @@ module ActionController
 
     private
 
-      def convert_hashes_to_parameters(key, value)
+      def convert_hashes_to_parameters(key, value, assign_if_converted=true)
         converted = convert_value_to_parameters(value)
-        self[key] = converted unless converted.equal?(value)
+        self[key] = converted if assign_if_converted && !converted.equal?(value)
         converted
       end
 

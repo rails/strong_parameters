@@ -334,6 +334,12 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_equal "prop0", params[:properties]["0"]
   end
 
+  test "fetch with a default value of a hash does not mutate the object" do
+    params = ActionController::Parameters.new({})
+    params.fetch :foo, {}
+    assert_equal nil, params[:foo]
+  end
+
   test 'hashes in array values get wrapped' do
     params = ActionController::Parameters.new(foo: [{}, {}])
     params[:foo].each do |hash|
