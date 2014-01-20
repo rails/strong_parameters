@@ -4,6 +4,7 @@ require 'stringio'
 
 require 'active_support/concern'
 require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/array/wrap'
 require 'action_controller'
 require 'action_dispatch/http/upload'
 
@@ -43,8 +44,10 @@ module ActionController
 
     def permit!
       each_pair do |key, value|
-        convert_hashes_to_parameters(key, value)
-        self[key].permit! if self[key].respond_to? :permit!
+        value = convert_hashes_to_parameters(key, value)
+        Array.wrap(value).each do |_|
+          _.permit! if _.respond_to? :permit!
+        end
       end
 
       @permitted = true

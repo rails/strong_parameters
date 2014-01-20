@@ -3,9 +3,16 @@ require 'action_controller/parameters'
 
 class ParametersTaintTest < ActiveSupport::TestCase
   setup do
-    @params = ActionController::Parameters.new({ :person => {
-      :age => "32", :name => { :first => "David", :last => "Heinemeier Hansson" }
-    }})
+    @params = ActionController::Parameters.new(
+      person: {
+        age: '32',
+        name: {
+          first: 'David',
+          last: 'Heinemeier Hansson'
+        },
+        addresses: [{city: 'Chicago', state: 'Illinois'}]
+      }
+    )
   end
 
   test "fetch raises ParameterMissing exception" do
@@ -89,5 +96,6 @@ class ParametersTaintTest < ActiveSupport::TestCase
     assert @params.permitted?
     assert @params[:person].permitted?
     assert @params[:person][:name].permitted?
+    assert @params[:person][:addresses][0].permitted?
   end
 end
