@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    strong_parameters (0.2.2)
+    strong_parameters (0.2.3)
       actionpack (~> 3.0)
       activemodel (~> 3.0)
       activesupport (~> 3.0)
