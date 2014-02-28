@@ -4,13 +4,13 @@ require 'action_controller/parameters'
 class ParametersTaintTest < ActiveSupport::TestCase
   setup do
     @params = ActionController::Parameters.new(
-      person: {
-        age: '32',
-        name: {
-          first: 'David',
-          last: 'Heinemeier Hansson'
+      :person => {
+        :age => '32',
+        :name => {
+          :first => 'David',
+          :last => 'Heinemeier Hansson'
         },
-        addresses: [{city: 'Chicago', state: 'Illinois'}]
+        :addresses => [{:city => 'Chicago', :state => 'Illinois'}]
       }
     )
   end
