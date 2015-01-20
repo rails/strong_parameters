@@ -199,7 +199,7 @@ def children(model)
   end
 end
 
-Dir.glob('app/models/**/*.rb').each do |model|
+Dir.glob('app/models/**/*.rb') do |model|
   load model
 end
 
