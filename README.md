@@ -136,6 +136,150 @@ config.active_record.whitelist_attributes = false
 
 This will allow you to remove / not have to use `attr_accessible` and do mass assignment inside your code and tests.
 
+## Migration Path to Rails 4
+
+In order to have an idiomatic Rails 4 application, Rails 3 applications may
+use this gem to introduce strong parameters in preparation for their upgrade.
+
+The following is a way to do that gradually:
+
+### 1 Depend on `strong_parameters`
+
+Add this gem to the application +Gemfile+:
+
+``` ruby
+gem 'strong_parameters'
+```
+
+and run `bundle install`.
+
+After this change, the `params` object in requests is of type
+`ActionController::Parameters`. That is a subclass of
+`ActiveSupport::HashWithIndifferentAccess` and therefore everything should
+work as before. The test suite should be green, and the application can be
+deployed.
+
+### 2 Compute a Topological Sort of Active Record Models
+
+We are going to work model by model, and the natural order to do that
+systematically is topological. That is, if post has many comments, first you
+do `Post`, and later you do `Comment`.
+
+Reason is that order plays well with nested attributes. You can mass-assign
+`ActionController::Parameters` to `Post`, and if that includes
+`comments_attributes` and the `Comment` model is not yet done, it will work.
+But if `Comment` is done first, then the mass-assigning to `Post` won't permit
+its attributes and won't work.
+
+This script prints a topological sort of the Active Record models to standard
+output:
+
+```ruby
+require 'tsort'
+require 'set'
+
+class Graph < Hash
+  include TSort
+
+  alias tsort_each_node each_key
+
+  def tsort_each_child(node, &block)
+    fetch(node).each(&block)
+  end
+end
+
+def children(model)
+  Set.new.tap do |children|
+    model.reflect_on_all_associations.each do |association|
+      next unless [:has_many, :has_one].include?(association.macro)
+      next if association.options[:through]
+
+      children << association.klass
+    end
+  end
+end
+
+Dir.glob('app/models/**/*.rb').each do |model|
+  load model
+end
+
+graph = Graph.new
+ActiveRecord::Base.descendants.each do |model|
+  graph[model] = children(model) unless model.abstract_class?
+end
+
+graph.tsort.reverse_each do |klass|
+  puts klass.name
+end
+```
+
+Execute it with `rails runner`.
+
+### 3 Protect Every Active Record Model, One at a Time
+
+Once the dependency is in place and the topological listing computed, you can
+work model by model. Do one model, deploy. Do another model, deploy. Etc.
+
+For each model:
+
+#### 3.1 Add Protection
+
+Remove any `attr_accessible` or `attr_protected` declarations and include
+`ActiveModel::ForbiddenAttributesProtection`:
+
+``` ruby
+class Post < ActiveRecord::Base
+  include ActiveModel::ForbiddenAttributesProtection
+end
+```
+
+#### 3.2 (Optional) Check the Suite is Red
+
+If the application performs any mass-assignement into that model, the test
+suite should not pass. Expect the test suite to raise
+`ActiveModel::ForbiddenAttributes` in those spots.
+
+If the test suite is green, either it lacks coverage (fix it), or there is no
+mass-assignment going on (ready to deploy).
+
+#### 3.3 Whitelisting
+
+Go to every controller whose actions trigger mass-assignment on that model via
+`params` and sanitize the input data using `require` and `permit`, as
+explained above.
+
+#### 3.4 Deploy
+
+Once everything is whitelisted and the suite is green, this particular model
+can be pushed.
+
+Ready to work on the next model.
+
+### 4 Add Protection Globally
+
+Once all models are done, remove their inclusion of the protecting module:
+
+``` ruby
+class Post < ActiveRecord::Base
+  # REMOVE THIS LINE IN EVERY PERSISTENT MODEL
+  include ActiveModel::ForbiddenAttributesProtection
+end
+```
+
+and add it globally in an initializer:
+
+``` ruby
+# config/initializers/strong_parameters.rb
+ActiveRecord::Base.class_eval do
+  include ActiveModel::ForbiddenAttributesProtection
+end
+```
+
+### 5 Upgrade to Rails 4
+
+To upgrade to Rails 4 just remove the previous initializer, everything else is
+ready as far as strong parameters is concerned.
+
 ## Compatibility
 
 This plugin is only fully compatible with Rails versions 3.0, 3.1 and 3.2 but not 4.0+, as it is part of Rails Core in 4.0.
