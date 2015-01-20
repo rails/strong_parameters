@@ -145,7 +145,7 @@ The following is a way to do that gradually:
 
 ### 1 Depend on `strong_parameters`
 
-Add this gem to the application +Gemfile+:
+Add this gem to the application `Gemfile`:
 
 ``` ruby
 gem 'strong_parameters'
