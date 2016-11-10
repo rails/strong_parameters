@@ -63,7 +63,7 @@ module ActionController
     def permit(*filters)
       params = self.class.new
 
-      filters.each do |filter|
+      filters.flatten.each do |filter|
         case filter
         when Symbol, String
           permitted_scalar_filter(params, filter)

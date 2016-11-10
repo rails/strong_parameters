@@ -104,6 +104,12 @@ class NestedParametersTest < ActiveSupport::TestCase
     assert_equal nil, permitted[:c]
   end
 
+  test 'permit parameters as an array' do
+    params = ActionController::Parameters.new(:foo => 'bar')
+
+    assert_equal 'bar', params.permit([:foo])[:foo]
+  end
+
   # --- key to empty array -----------------------------------------------------
 
   test 'key to empty array: empty arrays pass' do
