@@ -237,7 +237,7 @@ end
 
 #### 3.2 (Optional) Check the Suite is Red
 
-If the application performs any mass-assignement into that model, the test
+If the application performs any mass-assignment into that model, the test
 suite should not pass. Expect the test suite to raise
 `ActiveModel::ForbiddenAttributes` in those spots.
 
